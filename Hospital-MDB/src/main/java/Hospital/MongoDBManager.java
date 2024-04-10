@@ -30,20 +30,24 @@ public class MongoDBManager {
         System.out.println("Ingrese los datos del nuevo paciente:");
         System.out.print("Código de paciente: ");
         String codigoPaciente = scanner.nextLine();
-        System.out.print("Enfermedad: ");
-        String enfermedad = scanner.nextLine();
-        System.out.print("Código de médico asignado: ");
-        String codigoMedico = scanner.nextLine();
-        System.out.print("Código de planta asignada: ");
-        String codigoPlanta = scanner.nextLine();
+        if(!pacienteExiste(codigoPaciente)) {
+        	System.out.print("Enfermedad: ");
+        	String enfermedad = scanner.nextLine();
+        	System.out.print("Código de médico asignado: ");
+        	String codigoMedico = scanner.nextLine();
+        	System.out.print("Código de planta asignada: ");
+        	String codigoPlanta = scanner.nextLine();
 
-        Document paciente = new Document("codigo_paciente", codigoPaciente)
-                                    .append("enfermedad", enfermedad)
-                                    .append("codigo_medico", codigoMedico)
-                                    .append("codigo_planta", codigoPlanta);
+        	Document paciente = new Document("codigo_paciente", codigoPaciente)
+                                    	.append("enfermedad", enfermedad)
+                                    	.append("codigo_medico", codigoMedico)
+                                    	.append("codigo_planta", codigoPlanta);
 
-        pacientesCollection.insertOne(paciente);
-        System.out.println("Paciente insertado correctamente.");
+        	pacientesCollection.insertOne(paciente);
+        	System.out.println("Paciente insertado correctamente.");
+        }else {
+        	System.out.println("El paciente ya existe");
+        }
     }
 
     public void deletePaciente() {
@@ -82,19 +86,34 @@ public class MongoDBManager {
         FindIterable<Document> pacientes = pacientesCollection.find();
         pacientes.forEach((Consumer<? super Document>) document -> System.out.println(document.toJson()));
     }
+    
+    public void findPaciente() {
+    	System.out.println("Ingrese el codigo del paciente a buscar");
+    	String coidgoPaciente = scanner.nextLine();
+    	if (pacienteExiste(coidgoPaciente)) {
+    		Document paciente = pacientesCollection.find(Filters.eq("codigo_paciente",coidgoPaciente)).first();
+			System.out.println(paciente.toJson());
+		} else {
+			System.out.println("Paciente no encontrado(no existe o codigo erroneo)");
+		}
+    }
 
     public void insertMedico() {
         System.out.println("Ingrese los datos del nuevo médico:");
         System.out.print("Código de médico: ");
         String codigoMedico = scanner.nextLine();
-        System.out.print("Código de planta asignada: ");
-        String codigoPlanta = scanner.nextLine();
+        if(!medicoExiste(codigoMedico)) {
+        	System.out.print("Código de planta asignada: ");
+        	String codigoPlanta = scanner.nextLine();
 
-        Document medico = new Document("codigo_medico", codigoMedico)
-                                .append("codigo_planta", codigoPlanta);
+        	Document medico = new Document("codigo_medico", codigoMedico)
+                                	.append("codigo_planta", codigoPlanta);
 
-        medicosCollection.insertOne(medico);
-        System.out.println("Médico insertado correctamente.");
+        	medicosCollection.insertOne(medico);
+        	System.out.println("Médico insertado correctamente.");
+        }else {
+        	System.out.println("El medico ya existe");
+        }
     }
 
     public void deleteMedico() {
@@ -130,6 +149,7 @@ public class MongoDBManager {
         medicos.forEach((Consumer<? super Document>) document -> System.out.println(document.toJson()));
     }
     
+    
     private boolean pacienteExiste(String codigoPaciente) {
         return pacientesCollection.countDocuments(Filters.eq("codigo_paciente", codigoPaciente)) > 0;
     }
@@ -155,11 +175,12 @@ public class MongoDBManager {
             System.out.println("2. Eliminar paciente");
             System.out.println("3. Actualizar paciente");
             System.out.println("4. Mostrar todos los pacientes");
-            System.out.println("5. Insertar médico");
-            System.out.println("6. Eliminar médico");
-            System.out.println("7. Actualizar médico");
-            System.out.println("8. Mostrar todos los médicos");
-            System.out.println("9. Salir");
+            System.out.println("5. Buscar pacientes");
+            System.out.println("6. Insertar médico");
+            System.out.println("7. Eliminar médico");
+            System.out.println("8. Actualizar médico");
+            System.out.println("9. Mostrar todos los médicos");
+            System.out.println("10. Salir");
 
             int opcion = scanner.nextInt();
             scanner.nextLine(); 
